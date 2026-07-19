@@ -1,0 +1,302 @@
+/* ===========================
+   ABOUT PAGE - COURTIFY
+   Primary Color: #0e1d61
+=========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.about {
+    margin-top: -50px;
+    width: 100%;
+    background: #f7f9fc;
+    color: #333;
+    font-family: "Segoe UI", sans-serif;
+}
+.btn,
+.btn-white {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.btn {
+    background: #0e1d61;
+    color: white;
+}
+
+.btn:hover {
+    background: #162b86;
+    transform: translateY(-2px);
+}
+
+.btn-white {
+    background: white;
+    color: #0e1d61;
+}
+
+.btn-white:hover {
+    background: #eef2ff;
+    transform: translateY(-2px);
+}
+
+/* ===========================
+   HERO
+=========================== */
+
+.hero {
+    max-width: 1200px;
+    margin: auto;
+    padding: 90px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.hero-text .subtitle {
+    color: #0e1d61;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.hero-text h1 {
+    font-size: 48px;
+    margin: 20px 0;
+    color: #0e1d61;
+    line-height: 1.2;
+}
+
+.hero-text p {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.hero-image img {
+    width: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+    box-shadow: 0 12px 35px rgba(0,0,0,.12);
+}
+
+/* ===========================
+   STORY
+=========================== */
+
+.story {
+    max-width: 1200px;
+    margin: auto;
+    padding: 90px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.story-image img {
+    width: 100%;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.1);
+}
+
+.story-content h2 {
+    font-size: 36px;
+    color: #0e1d61;
+    margin-bottom: 25px;
+}
+
+.story-content p {
+    color: #666;
+    line-height: 1.9;
+    margin-bottom: 18px;
+}
+
+/* ===========================
+   MISSION
+=========================== */
+
+.mission {
+    background: white;
+    padding: 90px 20px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 30px;
+}
+
+.card {
+    background: #f8fbff;
+    padding: 35px;
+    border-radius: 18px;
+    text-align: center;
+    transition: .3s;
+    border-top: 5px solid #0e1d61;
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+}
+
+.card h3 {
+    color: #0e1d61;
+    margin-bottom: 18px;
+    font-size: 24px;
+}
+
+.card p {
+    color: #666;
+    line-height: 1.8;
+}
+
+/* ===========================
+   FEATURES
+=========================== */
+
+.features {
+    max-width: 1200px;
+    margin: auto;
+    padding: 90px 20px;
+}
+
+.features h2 {
+    text-align: center;
+    color: #0e1d61;
+    font-size: 38px;
+    margin-bottom: 50px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+    transition: .3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+}
+
+.feature-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.feature-card h3 {
+    padding: 20px 20px 10px;
+    color: #0e1d61;
+}
+
+.feature-card p {
+    padding: 0 20px 25px;
+    color: #666;
+    line-height: 1.7;
+}
+
+/* ===========================
+   CTA
+=========================== */
+
+.cta {
+    background: linear-gradient(135deg,#0e1d61,#1d3ea8);
+    color: white;
+    text-align: center;
+    padding: 90px 20px;
+}
+
+.cta h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+}
+
+.cta p {
+    max-width: 700px;
+    margin: auto;
+    line-height: 1.8;
+    opacity: .95;
+    margin-bottom: 35px;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width:992px){
+
+    .hero,
+    .story{
+        grid-template-columns:1fr;
+        text-align:center;
+    }
+
+    .hero h1{
+        font-size:40px;
+    }
+
+    .mission{
+        grid-template-columns:1fr;
+    }
+
+    .feature-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media (max-width:768px){
+
+    .hero{
+        padding:70px 20px;
+    }
+
+    .hero h1{
+        font-size:34px;
+    }
+
+    .story h2,
+    .features h2,
+    .cta h2{
+        font-size:30px;
+    }
+
+    .feature-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media (max-width:480px){
+
+    .hero h1{
+        font-size:28px;
+    }
+
+    .story,
+    .mission,
+    .features,
+    .cta{
+        padding:60px 16px;
+    }
+
+    .btn,
+    .btn-white{
+        width:100%;
+    }
+
+}

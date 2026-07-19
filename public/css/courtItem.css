@@ -1,0 +1,374 @@
+/* ===========================
+   COURTIFY - COURT ITEM CSS
+   Flex Layout
+=========================== */
+
+
+/* Section */
+
+.court-section {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+
+.court-title {
+    font-family: var(--font-family-title);
+    color: var(--primary);
+
+    font-size: 32px;
+    font-weight: 700;
+
+    margin-bottom: 30px;
+}
+
+
+
+/* ===========================
+   FLEX LIST
+=========================== */
+
+.court-list {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 24px;
+
+    width: 100%;
+
+}
+
+
+
+/* ===========================
+   COURT CARD
+=========================== */
+
+.court-item {
+
+    flex: 0 0 calc(25% - 18px);
+
+    background: var(--surface-container-lowest);
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--outline-variant);
+
+    box-shadow:
+        0 8px 24px rgba(0, 35, 111, 0.08);
+
+    transition: var(--transition);
+
+}
+
+
+
+.court-item:hover {
+
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 16px 35px rgba(0, 35, 111, 0.15);
+
+}
+
+
+
+/* ===========================
+   IMAGE
+=========================== */
+
+.court-thumbnail {
+
+    width: 100%;
+
+    height: 220px;
+
+    object-fit: cover;
+
+}
+
+
+
+/* ===========================
+   CONTENT
+=========================== */
+
+.court-content {
+
+    padding: 20px;
+
+}
+
+
+
+/* Header */
+
+.court-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 14px;
+
+}
+
+
+
+/* Sport Type */
+
+.sport-type {
+
+    background: var(--surface-container);
+
+    color: var(--primary);
+
+    padding: 6px 14px;
+
+    border-radius: 30px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+
+/* New Badge */
+
+.badge-new {
+
+    background: var(--secondary);
+
+    color: white;
+
+    padding: 5px 12px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+
+/* Name */
+
+.court-content h3 {
+
+    font-family: var(--font-family-title);
+
+    color: var(--on-surface);
+
+    font-size: 20px;
+
+    line-height: 1.4;
+
+    margin-bottom: 12px;
+
+    min-height: 56px;
+
+}
+
+
+
+/* Address */
+
+.address {
+
+    color: var(--on-surface-variant);
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    min-height: 48px;
+
+    margin-bottom: 18px;
+
+}
+
+
+
+/* Info */
+
+.court-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: var(--on-surface-variant);
+
+    font-size: 14px;
+
+    padding: 12px 0;
+
+    border-top:
+
+        1px solid var(--outline-variant);
+
+    border-bottom:
+
+        1px solid var(--outline-variant);
+
+}
+
+
+
+/* Footer */
+
+.court-footer {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 18px;
+
+}
+
+
+
+/* Price */
+
+.price {
+
+    color: var(--primary);
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+}
+
+
+
+/* Button */
+
+.btn-book {
+
+    border: none;
+
+    background: var(--primary);
+
+    color: var(--on-primary);
+
+    padding: 10px 20px;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+
+}
+
+
+
+.btn-book:hover {
+
+    background: var(--primary-container);
+
+    transform: translateY(-2px);
+
+}
+
+
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+
+/* Desktop nhỏ */
+
+@media (max-width: 1200px) {
+
+    .court-item {
+
+        flex: 0 0 calc(33.333% - 16px);
+
+    }
+
+}
+
+
+
+/* Tablet */
+
+@media (max-width: 900px) {
+
+    .court-item {
+
+        flex: 0 0 calc(50% - 12px);
+
+    }
+
+}
+
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .court-section {
+
+        padding: 30px 16px;
+
+    }
+
+
+    .court-item {
+
+        flex: 0 0 100%;
+
+    }
+
+
+    .court-thumbnail {
+
+        height: 200px;
+
+    }
+
+
+    .court-footer {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 15px;
+
+    }
+
+
+    .btn-book {
+
+        width: 100%;
+
+    }
+
+}

@@ -1,0 +1,257 @@
+:root {
+  --primary: #00236f;
+  --primary-container: #1e3a8a;
+  --secondary: #F59E0B;
+  --surface: #ffffff;
+  --surface-muted: #f4f7ff;
+  --text: #11233d;
+  --text-muted: #667085;
+  --border: #e6ebf5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Hanken Grotesk', sans-serif;
+  background: #f8f9ff;
+  color: var(--text);
+}
+
+.checkout-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 36px 20px 60px;
+}
+
+.checkout-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+}
+
+.checkout-header {
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+}
+
+.checkout-header h1 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 28px;
+}
+
+.checkout-header p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 0.9fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-box,
+.summary-box {
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.summary-box {
+  position: sticky;
+  top: 20px;
+}
+
+.panel-box h3,
+.summary-box h3,
+.summary-voucher h4,
+.payment-methods h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+}
+
+.booking-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.note-panel {
+  width: 100%;
+}
+
+.note-panel textarea {
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+}
+
+.booking-item,
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.booking-item strong,
+.summary-row strong {
+  color: var(--text);
+  text-align: right;
+}
+
+.summary-row.total-row {
+  border-bottom: 0;
+  padding-bottom: 0;
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.discount-row {
+  color: #d14343;
+  display: none;
+}
+
+.voucher-input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.voucher-input-row input,
+textarea {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 12px;
+  font: inherit;
+  background: white;
+}
+
+.voucher-input-row button {
+  border: none;
+  background: var(--secondary);
+  color: white;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.voucher-message {
+  min-height: 18px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.summary-voucher {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.payment-panel {
+  margin-top: 0;
+}
+
+.payment-options {
+  display: grid;
+  gap: 10px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.payment-option.active {
+  border-color: var(--primary);
+  background: #eef4ff;
+}
+
+.payment-option strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.payment-option p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.btn {
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  flex: 3;
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.btn-confirm {
+  flex: 7;
+  background: var(--primary);
+  color: white;
+}
+
+@media (max-width: 900px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-box {
+    position: static;
+  }
+}
+
+@media (max-width: 700px) {
+  .voucher-input-row,
+  .action-row {
+    flex-direction: column;
+  }
+}
+ .active {
+  color: var(--primary);
+  font-weight: 700;
+}
