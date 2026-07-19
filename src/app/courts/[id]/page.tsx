@@ -311,7 +311,7 @@ export default async function CourtDetailPage(props: { params: Promise<{ id: str
                                     </div>
                                 </div>
 
-                                <button type="submit" className="btn-booking-submit">Đặt sân ngay</button>
+                                <Link href="/checkout" className="btn-booking-submit">Đặt sân ngay</Link>
                             </form>
                         </div>
                     </div>

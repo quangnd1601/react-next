@@ -46,6 +46,9 @@ export default async function CheckoutSuccessPage() {
                     <Link href="/courts" className="btn btn-primary">
                         Tìm sân khác
                     </Link>
+                    <Link href="/profile" className="btn btn-secondary">
+                        Lịch sử đặt sân
+                    </Link>
                 </div>
             </section>
         </main>

@@ -554,6 +554,7 @@
     background-color: var(--primary-container);
     color: #fff;
     border: none;
+    text-align: center;
     font-family: var(--font-family-title);
     font-size: 16px;
     font-weight: 700;
