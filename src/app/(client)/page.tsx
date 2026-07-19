@@ -5,35 +5,6 @@ import CourtListNew from "@/components/courtListNew";
 import { ICategory } from "@/interface/category"
 import { ICourtNew } from "@/interface/courtNew";
 
-// const productHot: IProduct[] = [
-//   {
-//     id: 1,
-//     name: "Product 1",
-//     price: 10.99,
-//     sale_price: 8.99,
-//     image: "https://via.placeholder.com/150",
-//     description: "This is product 1",
-//     stock: 5,
-//   },
-//   {
-//     id: 2,
-//     name: "Product 2",
-//     price: 15.99,
-//     sale_price: 13.99,
-//     image: "https://via.placeholder.com/150",
-//     description: "This is product 2",
-//     stock: 3,
-//   },
-//   {
-//     id: 3,
-//     name: "Product 3",
-//     price: 20.99,
-//     sale_price: 18.99,
-//     image: "https://via.placeholder.com/150",
-//     description: "This is product 3",
-//     stock: 10,
-//   },
-// ];
 export default function Home() {
   const categories: ICategory[] = [
     { id: "1", name: "Tennis" },

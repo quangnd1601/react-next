@@ -1,0 +1,212 @@
+<!doctype html>
+<html class="scroll-smooth" lang="vi">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Courtify | Owner Dashboard</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind Theme Config -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-tint": "#4059aa",
+            "surface-container-low": "#eff4ff",
+            "tertiary-fixed-dim": "#ffb690",
+            "on-secondary-container": "#536d22",
+            "tertiary-fixed": "#ffdbca",
+            "surface-dim": "#cbdbf5",
+            outline: "#757682",
+            "primary-fixed-dim": "#b6c4ff",
+            "surface-container-highest": "#d3e4fe",
+            "inverse-on-surface": "#eaf1ff",
+            "on-secondary-fixed": "#131f00",
+            secondary: "#4d661c",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed": "#341100",
+            tertiary: "#4b1c00",
+            "on-primary": "#ffffff",
+            "surface-variant": "#d3e4fe",
+            "on-primary-fixed-variant": "#264191",
+            "primary-container": "#1e3a8a",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            error: "#ba1a1a",
+            "inverse-surface": "#213145",
+            "inverse-primary": "#b6c4ff",
+            "on-primary-fixed": "#00164e",
+            "surface-container": "#e5eeff",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#ceee93",
+            primary: "#00236f",
+            background: "#f8f9ff",
+            "on-secondary": "#ffffff",
+            "on-surface-variant": "#444651",
+            "outline-variant": "#c5c5d3",
+            "on-tertiary-container": "#ff8f4f",
+            "surface-container-high": "#dce9ff",
+            "primary-fixed": "#dce1ff",
+            "secondary-container": "#ceee93",
+            "on-tertiary-fixed-variant": "#783200",
+            "on-surface": "#0b1c30",
+            "error-container": "#ffdad6",
+            "secondary-fixed-dim": "#b3d17a",
+            "on-background": "#0b1c30",
+            surface: "#f8f9ff",
+            "on-secondary-fixed-variant": "#364e03",
+            "on-primary-container": "#90a8ff",
+            "tertiary-container": "#6e2d00",
+            "surface-bright": "#f8f9ff",
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px",
+          },
+          spacing: {
+            xs: "4px",
+            gutter: "24px",
+            "margin-mobile": "16px",
+            base: "4px",
+            sm: "8px",
+            lg: "24px",
+            xl: "48px",
+            md: "16px",
+            "container-max": "1280px",
+          },
+          fontFamily: {
+            "headline-lg": ["Lexend"],
+            "label-md": ["Hanken Grotesk"],
+            "headline-lg-mobile": ["Lexend"],
+            "body-lg": ["Hanken Grotesk"],
+            "headline-md": ["Lexend"],
+            "headline-xl": ["Lexend"],
+            "label-sm": ["Hanken Grotesk"],
+            "body-md": ["Hanken Grotesk"],
+          },
+          fontSize: {
+            "headline-lg": ["32px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "label-md": ["14px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "600" }],
+            "headline-lg-mobile": ["24px", { lineHeight: "1.2", fontWeight: "700" }],
+            "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+            "headline-md": ["20px", { lineHeight: "1.4", fontWeight: "600" }],
+            "headline-xl": ["40px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "label-sm": ["12px", { lineHeight: "1.2", fontWeight: "500" }],
+            "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Owner-specific CSS (tách từ <style> inline) -->
+  <link rel="stylesheet" href="./owner.css" />
+</head>
+
+<body class="bg-background text-on-background font-body-md">
+
+  <!--
+    ============================================================
+    BỐ CỤC TRANG (LAYOUT ADMIN - CHỦ SÂN)
+    Gồm 2 phần:
+      1. #sidebar   - Thanh điều hướng cố định bên trái (dọc)
+      2. #main-area - Vùng nội dung chính bên phải
+    ============================================================
+    Nội dung bên trong #app sẽ được OwnerView.ts render vào.
+    Xem renderLayout() trong OwnerView.ts để hiểu cấu trúc.
+    ============================================================
+  -->
+
+  <!--
+    ─── LOADING SPINNER (hiển thị khi trang đang tải dữ liệu) ───
+    OwnerController sẽ thay thế nội dung bên trong #app
+    bằng HTML được trả về từ OwnerView sau khi fetch API xong.
+  -->
+  <div id="app" class="flex items-center justify-center min-h-screen">
+    <div class="spinner"></div>
+  </div>
+
+  <!--
+    ─── CẤU TRÚC DO OwnerView.ts RENDER (ví dụ) ────────────────
+
+    <div class="flex min-h-screen">
+
+      <!-- SIDEBAR (bố cục - layout) -->
+      <aside class="owner-sidebar w-64 min-h-screen flex flex-col fixed top-0 left-0 z-40">
+        <!-- Logo -->
+        <div class="p-6 border-b border-white/10">
+          <a href="index.html" class="font-headline-xl text-xl font-bold text-white">Courtify</a>
+          <p class="text-xs text-white/50 mt-1">Owner Dashboard</p>
+        </div>
+
+        <!-- Nav links -->
+        <nav class="flex-1 p-4 space-y-1">
+          <a href="owner.html"            class="flex items-center gap-3 px-4 py-3 text-sm text-white/90 rounded-lg transition-all [active]">
+            <span class="material-symbols-outlined text-[20px]">dashboard</span> Dashboard
+          </a>
+          <a href="owner.html?ctrl=centers" class="flex items-center gap-3 px-4 py-3 text-sm text-white/90 rounded-lg transition-all">
+            <span class="material-symbols-outlined text-[20px]">stadium</span> Cụm sân
+          </a>
+          <a href="owner.html?ctrl=courts"  class="flex items-center gap-3 px-4 py-3 text-sm text-white/90 rounded-lg transition-all">
+            <span class="material-symbols-outlined text-[20px]">sports_tennis</span> Sân
+          </a>
+          <a href="owner.html?ctrl=bookings" class="flex items-center gap-3 px-4 py-3 text-sm text-white/90 rounded-lg transition-all">
+            <span class="material-symbols-outlined text-[20px]">event_note</span> Booking
+          </a>
+          <a href="owner.html?ctrl=vouchers" class="flex items-center gap-3 px-4 py-3 text-sm text-white/90 rounded-lg transition-all">
+            <span class="material-symbols-outlined text-[20px]">confirmation_number</span> Voucher
+          </a>
+        </nav>
+
+        <!-- Footer: Back to site -->
+        <div class="p-4 border-t border-white/10">
+          <a href="index.html" class="flex items-center gap-2 px-4 py-3 text-sm text-white/60 hover:text-white rounded-lg transition-colors">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span> Về trang chủ
+          </a>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT (nội dung chủ sân) -->
+      <main class="flex-1 ml-64">
+
+        <!-- Topbar -->
+        <header class="bg-white border-b border-outline-variant/20 px-8 py-4 flex justify-between items-center sticky top-0 z-30">
+          <h1 class="font-headline-md text-headline-md text-primary">[Tiêu đề trang]</h1>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-on-surface-variant">Owner</span>
+            <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white text-sm font-bold">O</div>
+          </div>
+        </header>
+
+        <!-- Page Content (được inject từ OwnerView) -->
+        <div class="p-8">
+          [NỘI DUNG TRANG: Dashboard / Centers / Courts / Bookings / Vouchers]
+        </div>
+
+      </main>
+    </div>
+
+    ─── KẾT THÚC CẤU TRÚC RENDER ────────────────────────────────
+  -->
+
+  <!-- Entry point JS (biên dịch từ owner.ts) -->
+  <script type="module" src="../dist/owner.js"></script>
+</body>
+
+</html>
