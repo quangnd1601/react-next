@@ -1,6 +1,12 @@
 "use client"
-// import { useState } from "react";
+import { useState } from "react";
 const RegisterPage = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(0);
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
+
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -18,7 +24,7 @@ const RegisterPage = () => {
                 type="text"
                 required
                 className="form-input"
-                placeholder="Nguyễn Duy Quang"
+                placeholder="Nguyễn Văn A"
               />
             </div>
           </div>
@@ -33,7 +39,6 @@ const RegisterPage = () => {
                 required
                 className="form-input"
                 placeholder="name@gmail.com"
-
               />
             </div>
           </div>
@@ -48,7 +53,6 @@ const RegisterPage = () => {
                 required
                 className="form-input"
                 placeholder="0901234567"
-
               />
             </div>
           </div>
@@ -63,7 +67,6 @@ const RegisterPage = () => {
                 required
                 className="form-input"
                 placeholder="••••••••"
-
               />
             </div>
           </div>
@@ -78,7 +81,6 @@ const RegisterPage = () => {
                 required
                 className="form-input"
                 placeholder="••••••••"
-
               />
             </div>
           </div>
@@ -94,7 +96,11 @@ const RegisterPage = () => {
         </div>
       </div>
       <div>
-
+        Họ và tên: {name}
+        Email: {email}
+        Số điện thoại: {phoneNumber}
+        Mật Khẩu: {password}
+        Xác Nhận mật khẩu: {rePassword}
       </div>
     </div>
   )

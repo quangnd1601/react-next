@@ -1,5 +1,7 @@
 
 const AboutPage = () => {
+    console.log("check backend >>>>>>>", process.env.NEXT_PUBLIC_BACKEND_URL);
+
     return (
         <main className="about">
             {/* Hero */}

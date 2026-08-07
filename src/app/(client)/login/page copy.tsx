@@ -1,18 +1,12 @@
 "use client"
-// import { useState } from "react"
+import { useState } from "react"
 // form + state
 // props: truyền data từ component cha xuống component con
 // hook: useState: rerender layout khi giá trị thay đổi
 // vd: cart, user
-
 export default function LoginPage() {
-  // const [email, setEmail] = useState(""); // nếu muốn number thì useState<number>(0) hoặc useState<number | null>(null)
-  // const [password, setPassword] = useState("");
-
-  // const [LikeCount, setLikeCount] = useState(0);
-  // const handleClickLike = () => {
-  //   setLikeCount(LikeCount + 1);
-  // }
+  const [email, setEmail] = useState(""); // nếu muốn number thì useState<number>(0) hoặc useState<number | null>(null)
+  const [password, setPassword] = useState("");
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -30,8 +24,8 @@ export default function LoginPage() {
                 required
                 placeholder="name@gmail.com"
                 className="form-input"
-              // value={email} // giá trị của input = giá trị của state
-              // onChange={(e) => setEmail(e.target.value)} // cập nhật state khi người dùng nhập dữ liệu
+                value={email} // giá trị của input = giá trị của state
+                onChange={(e) => setEmail(e.target.value)} // cập nhật state khi người dùng nhập dữ liệu
               />
             </div>
           </div>
@@ -46,7 +40,8 @@ export default function LoginPage() {
                 required
                 className="form-input"
                 placeholder="••••••••"
-
+                value={password} // giá trị của input = giá trị của state
+                onChange={(e) => setPassword(e.target.value)} // cập nhật state khi người dùng nhập dữ liệu
               />
             </div>
           </div>
@@ -61,10 +56,6 @@ export default function LoginPage() {
           <a href="/register" className="auth-link">Đăng ký ngay</a>
         </div>
       </div>
-      <div>
-
-      </div>
     </div>
-
   )
 }
