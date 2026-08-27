@@ -1,6 +1,8 @@
 
+import { API_BASE_URL } from "@/config/env";
+
 const AboutPage = () => {
-    console.log("check backend >>>>>>>", process.env.NEXT_PUBLIC_BACKEND_URL);
+    console.log("check backend >>>>>>>", API_BASE_URL);
 
     return (
         <main className="about">

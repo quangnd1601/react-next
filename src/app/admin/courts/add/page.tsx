@@ -1,15 +1,100 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { adminCourtService } from "@/services/admin/courtService";
+import { adminCenterService } from "@/services/admin/centerService";
+import { ISportCenter } from "@/interface/sportCenter";
 import "../../page.css";
+import { API_BASE_URL } from "@/config/env";
 
 export default function AddCourtPage() {
     const router = useRouter();
+    const [centers, setCenters] = useState<ISportCenter[]>([]);
+    const [loadingCenters, setLoadingCenters] = useState(true);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // Form state
+    const [sportCenterId, setSportCenterId] = useState("");
+    const [courtName, setCourtName] = useState("");
+    const [price, setPrice] = useState("");
+    const [peakPrice, setPeakPrice] = useState("");
+    const [status, setStatus] = useState("ACTIVE");
+    const [submitting, setSubmitting] = useState(false);
+
+    // Upload ảnh
+    const [thumbnail, setThumbnail] = useState("");
+    const [thumbnailPreview, setThumbnailPreview] = useState("");
+    const [uploading, setUploading] = useState(false);
+
+    const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Preview trước
+        setThumbnailPreview(URL.createObjectURL(file));
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append("image", file);
+            formData.append("folder", "courtify/courts");
+            const res = await fetch(`${API_BASE_URL}/upload/single`, {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (data.success) {
+                setThumbnail(data.url);
+            } else {
+                alert(data.message || "Upload ảnh thất bại.");
+                setThumbnailPreview("");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Có lỗi xảy ra khi upload ảnh.");
+            setThumbnailPreview("");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    useEffect(() => {
+        Promise.resolve().then(async () => {
+            const data = await adminCenterService.getAll();
+            setCenters(data);
+            setLoadingCenters(false);
+        });
+    }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        alert("Đã thêm sân mới thành công!");
-        router.push("/admin/courts");
+        if (!sportCenterId || !courtName.trim() || !price.trim()) {
+            alert("Vui lòng điền đủ các trường bắt buộc (Cụm sân, Tên sân, Giá).");
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            const payload = {
+                sport_center_id: sportCenterId,
+                court_name: courtName.trim(),
+                price: Number(price.replace(/[^\d]/g, "")),
+                peak_price: peakPrice ? Number(peakPrice.replace(/[^\d]/g, "")) : undefined,
+                status,
+                thumbnail: thumbnail || undefined,
+            };
+            const res = await adminCourtService.create(payload);
+            if (res.success) {
+                alert("Đã thêm sân mới thành công!");
+                router.push("/admin/courts");
+            } else {
+                alert(res.message || "Không thể thêm sân mới!");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Có lỗi xảy ra khi thêm sân.");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -23,46 +108,61 @@ export default function AddCourtPage() {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label className="form-label">Thuộc Cụm sân *</label>
-                        <select className="form-input" required>
+                        <select className="form-input" required value={sportCenterId} onChange={(e) => setSportCenterId(e.target.value)}>
                             <option value="">-- Chọn cụm sân --</option>
-                            <option value="1">Cụm Sân Pickleball Thảo Điền</option>
-                            <option value="2">Cụm Sân Tennis Kỳ Hòa</option>
-                            <option value="3">Trung Tâm Cầu Lông Sunrise</option>
+                            {loadingCenters ? (
+                                <option disabled>Đang tải danh sách cụm sân...</option>
+                            ) : (
+                                centers.map((c) => (
+                                    <option key={c._id} value={c._id}>{c.name}</option>
+                                ))
+                            )}
                         </select>
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">Tên sân *</label>
-                        <input type="text" className="form-input" required placeholder="Ví dụ: Sân 04" />
+                        <input type="text" className="form-input" required placeholder="Ví dụ: Sân 04" value={courtName} onChange={(e) => setCourtName(e.target.value)} />
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label">Môn thể thao *</label>
-                        <select className="form-input" required>
-                            <option value="">-- Chọn môn --</option>
-                            <option value="pickleball">Pickleball</option>
-                            <option value="tennis">Tennis</option>
-                            <option value="badminton">Cầu lông</option>
-                            <option value="football">Bóng đá</option>
-                        </select>
+                        <label className="form-label">Giá thuê mỗi giờ (VND) *</label>
+                        <input type="text" className="form-input" required placeholder="Ví dụ: 150000" value={price} onChange={(e) => setPrice(e.target.value)} />
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label">Giá thuê mỗi giờ *</label>
-                        <input type="text" className="form-input" required placeholder="Ví dụ: 150.000đ/giờ" />
+                        <label className="form-label">Giá cao điểm (VND)</label>
+                        <input type="text" className="form-input" placeholder="Ví dụ: 220000" value={peakPrice} onChange={(e) => setPeakPrice(e.target.value)} />
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">Hình ảnh đại diện sân (Thumbnail)</label>
-                        <input type="file" className="form-input form-input-file" accept="image/*" />
+                        <input
+                            type="file"
+                            className="form-input form-input-file"
+                            accept="image/*"
+                            onChange={handleUploadImage}
+                        />
+                        {(thumbnailPreview || thumbnail) && (
+                            <div style={{ marginTop: 8 }}>
+                                <img
+                                    src={thumbnailPreview || thumbnail}
+                                    alt="Preview"
+                                    style={{ maxWidth: "100%", maxHeight: 160, objectFit: "cover", borderRadius: 8 }}
+                                />
+                            </div>
+                        )}
+                        {uploading && (
+                            <p style={{ fontSize: 12, color: "#6b7280" }}>Đang upload ảnh...</p>
+                        )}
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">Trạng thái sân</label>
-                        <select className="form-input">
-                            <option value="active">Hoạt động</option>
-                            <option value="maintenance">Bảo trì</option>
-                            <option value="inactive">Tạm đóng</option>
+                        <select className="form-input" value={status} onChange={(e) => setStatus(e.target.value)}>
+                            <option value="ACTIVE">Hoạt động</option>
+                            <option value="MAINTENANCE">Bảo trì</option>
+                            <option value="INACTIVE">Tạm đóng</option>
                         </select>
                     </div>
 
@@ -70,8 +170,8 @@ export default function AddCourtPage() {
                         <button type="button" className="action-btn cancel" onClick={() => router.push("/admin/courts")} style={{ padding: "12px 24px", borderRadius: 8, fontSize: 14 }}>
                             Hủy bỏ
                         </button>
-                        <button type="submit" className="btn-primary" style={{ padding: "12px 24px", borderRadius: 8 }}>
-                            <span className="material-symbols-outlined">save</span> Lưu sân mới
+                        <button type="submit" className="btn-primary" style={{ padding: "12px 24px", borderRadius: 8 }} disabled={submitting}>
+                            <span className="material-symbols-outlined">save</span> {submitting ? "Đang lưu..." : "Lưu sân mới"}
                         </button>
                     </div>
                 </form>

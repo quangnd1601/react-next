@@ -1,16 +1,51 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+'use client';
 
-export const metadata: Metadata = {
-  title: "Courtify | Admin Portal",
-  description: "Trang quản trị hệ thống Courtify",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      // Nếu chưa đăng nhập hoặc role không phải ADMIN -> Chuyển về trang đăng nhập
+      if (!user || user.role !== 'ADMIN') {
+        alert("Bạn không có quyền truy cập vào trang Admin!");
+        router.push("/login");
+      }
+    }
+  }, [user, loading, router]);
+
+  // Trong lúc chờ khôi phục dữ liệu từ localStorage
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontFamily: 'sans-serif',
+        fontSize: '18px',
+        fontWeight: 'bold',
+        color: '#00236f'
+      }}>
+        Đang kiểm tra quyền truy cập Admin...
+      </div>
+    );
+  }
+
+  // Nếu không phải ADMIN thì không render giao diện Admin
+  if (!user || user.role !== 'ADMIN') {
+    return null;
+  }
+
   return (
     <div className="admin-shell">
       <div className="admin-wrapper">

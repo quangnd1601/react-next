@@ -1,4 +1,25 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 export default function Banner() {
+    const router = useRouter();
+    const [location, setLocation] = useState("");
+    const [sport, setSport] = useState("");
+    const [date, setDate] = useState("");
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const params = new URLSearchParams();
+        if (location.trim()) params.set("search", location.trim());
+        if (sport) params.set("sport", sport.toLowerCase());
+        if (date) params.set("date", date);
+
+        const qs = params.toString();
+        router.push(qs ? `/courts?${qs}` : "/courts");
+    };
+
     return (
         <div>
             <section className="hero-section">
@@ -10,23 +31,30 @@ export default function Banner() {
                     <h1 className="hero-title">LÀM CHỦ MỌI TRẬN ĐẤU</h1>
                     <p className="hero-subtitle">Đặt sân Tennis, Cầu lông và Pickleball chuyên nghiệp chỉ trong vài giây. Đỉnh cao thi đấu bắt đầu từ sân chơi đúng tầm.</p>
 
-                    <form className="hero-search-form">
+                    <form className="hero-search-form" onSubmit={handleSearch}>
                         <div className="search-field">
                             <label className="search-label">ĐỊA ĐIỂM</label>
                             <div className="input-with-icon">
                                 <span className="material-symbols-outlined field-icon">location_on</span>
-                                <input className="search-input" placeholder="Phường, Quận, Thành phố" type="text" />
+                                <input
+                                    className="search-input"
+                                    placeholder="Phường, Quận, Thành phố"
+                                    type="text"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                />
                             </div>
                         </div>
                         <div className="search-field">
                             <label className="search-label">MÔN THỂ THAO</label>
                             <div className="input-with-icon">
                                 <span className="material-symbols-outlined field-icon">sports_tennis</span>
-                                <select className="search-select">
+                                <select className="search-select" value={sport} onChange={(e) => setSport(e.target.value)}>
                                     <option value="">Tất cả</option>
                                     <option value="Tennis">Tennis</option>
                                     <option value="Cầu lông">Cầu lông</option>
                                     <option value="Pickleball">Pickleball</option>
+                                    <option value="Bóng đá">Bóng đá</option>
                                 </select>
                             </div>
                         </div>
@@ -34,16 +62,15 @@ export default function Banner() {
                             <label className="search-label">NGÀY ĐẶT</label>
                             <div className="input-with-icon">
                                 <span className="material-symbols-outlined field-icon">calendar_today</span>
-                                <input className="search-input" type="date" />
+                                <input className="search-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
                             </div>
                         </div>
-                        <button type="button" className="btn-search-submit">
+                        <button type="submit" className="btn-search-submit">
                             <span className="material-symbols-outlined">search</span> TÌM SÂN NGAY
                         </button>
                     </form>
                 </div>
             </section>
-
         </div>
     );
 }

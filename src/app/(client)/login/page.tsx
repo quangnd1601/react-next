@@ -1,70 +1,102 @@
-"use client"
-// import { useState } from "react"
-// form + state
-// props: truyền data từ component cha xuống component con
-// hook: useState: rerender layout khi giá trị thay đổi
-// vd: cart, user
+'use client';
 
-export default function LoginPage() {
-  // const [email, setEmail] = useState(""); // nếu muốn number thì useState<number>(0) hoặc useState<number | null>(null)
-  // const [password, setPassword] = useState("");
+import { useState, Suspense } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter, useSearchParams } from "next/navigation";
 
-  // const [LikeCount, setLikeCount] = useState(0);
-  // const handleClickLike = () => {
-  //   setLikeCount(LikeCount + 1);
-  // }
+const LoginContent = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const { login } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
+  const expired = searchParams.get("expired") === "1";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await login(email, password);
+    if (result.success) {
+      alert("Đăng nhập thành công!");
+      if (result.role === 'ADMIN') {
+        router.push("/admin"); // Chuyển sang trang Admin
+      } else if (redirectUrl) {
+        router.push(redirectUrl); // Chuyển về trang cần redirect (ví dụ: Checkout)
+      } else {
+        router.push("/"); // Chuyển sang trang chủ Client
+      }
+    }
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h2 className="auth-title">ĐĂNG NHẬP</h2>
+          <h2 className="auth-title">Đăng nhập</h2>
         </div>
-        <form id="login-form" className="auth-form">
+        {expired && (
+          <div style={{
+            marginBottom: "14px",
+            padding: "10px 14px",
+            borderRadius: "8px",
+            background: "#fdeaea",
+            color: "#b91c1c",
+            border: "1px solid #fca5a5",
+            fontSize: "14px",
+            textAlign: "center"
+          }}>
+            Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label className="form-label" >Email của bạn:</label>
+            <label className="form-label">Email / Tên đăng nhập:</label>
             <div className="input-container">
               <span className="material-symbols-outlined input-icon">mail</span>
               <input
-                id="login-email"
-                type="email"
+                type="text"
+                placeholder="Tên đăng nhập / Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="name@gmail.com"
                 className="form-input"
-              // value={email} // giá trị của input = giá trị của state
-              // onChange={(e) => setEmail(e.target.value)} // cập nhật state khi người dùng nhập dữ liệu
               />
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label" >Mật khẩu</label>
+            <label className="form-label">Mật khẩu:</label>
             <div className="input-container">
               <span className="material-symbols-outlined input-icon">lock</span>
               <input
-                id="login-password"
                 type="password"
+                placeholder="Mật khẩu"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 className="form-input"
-                placeholder="••••••••"
-
               />
             </div>
           </div>
 
-          <button type="submit" className="btn-submit">
-            Đăng nhập
-          </button>
+          <button type="submit" className="btn-submit">Đăng nhập</button>
         </form>
 
         <div className="auth-footer">
-          Chưa có tài khoản?
+          Chưa có tài khoản?{" "}
           <a href="/register" className="auth-link">Đăng ký ngay</a>
         </div>
       </div>
-      <div>
-
-      </div>
     </div>
+  );
+};
 
-  )
-}
+const LoginPage = () => {
+  return (
+    <Suspense fallback={<div style={{ padding: '50px', textAlign: 'center' }}>Đang tải...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+};
+
+export default LoginPage;

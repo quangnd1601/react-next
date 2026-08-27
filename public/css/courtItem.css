@@ -372,3 +372,59 @@
     }
 
 }
+
+/* ===========================
+   COURT SECTION HEADER + FILTERS
+=========================== */
+
+.court-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.court-section-header .court-title {
+    margin-bottom: 0;
+}
+
+.court-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 0;
+}
+
+.court-filter-btn {
+    border: 1.5px solid var(--outline-variant);
+    background: var(--surface-container-lowest);
+    color: var(--on-surface-variant);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.court-filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.court-filter-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.court-empty {
+    width: 100%;
+    text-align: center;
+    color: var(--on-surface-variant);
+    font-size: 15px;
+    padding: 32px 0;
+}

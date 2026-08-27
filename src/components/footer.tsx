@@ -34,7 +34,7 @@ export default function Footer() {
                         <a href="#" className="footer-link">Liên hệ</a>
                         <div className="footer-contact">
                             <p className="contact-item"><span className="material-symbols-outlined">mail</span> contact@courtify.vn</p>
-                            <p className="contact-item"><span className="material-symbols-outlined">call</span> 1900 1234</p>
+                            <p className="contact-item"><span className="material-symbols-outlined">call</span> 1234 5678</p>
                         </div>
                     </div>
                 </div>

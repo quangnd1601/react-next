@@ -1,5 +1,5 @@
 export interface ICourt {
-    id: string;
+    _id: string;
     name: string;
     sport_type: "Tennis" | "Cầu lông" | "Pickleball";
     thumbnail: string;

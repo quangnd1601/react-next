@@ -1,85 +1,251 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { IBooking } from "@/interface/profile";
 import "./page.css";
+import { API_BASE_URL } from "@/config/env";
+import { authedFetch } from "@/services/client/session";
 
-// Mock data for bookings
-const MOCK_BOOKINGS = [
-    {
-        id: "booking1",
-        code: "COURT-78932",
-        status: "confirmed",
-        payment: "paid",
-        title: "Cụm Sân Pickleball Thảo Điền",
-        court: "Sân 03",
-        sport: "pickleball",
-        address: "12 Đường Thảo Điền, Thảo Điền, Quận 2, TP. HCM",
-        date: "21/07/2026",
-        timeSlot: "17:00-18:00, 18:00-19:00",
-        note: "Cần mượn thêm 2 vợt Pickleball.",
-        price: "300.000đ",
-    },
-    {
-        id: "booking2",
-        code: "COURT-55210",
-        status: "pending",
-        payment: "unpaid",
-        title: "Sân Tennis Kỳ Hòa",
-        court: "Sân Số 2",
-        sport: "tennis",
-        address: "238 Đường 3/2, Phường 12, Quận 10, TP. HCM",
-        date: "24/07/2026",
-        timeSlot: "19:00-20:00, 20:00-21:00",
-        note: "Bật đèn đêm từ 19:00.",
-        price: "400.000đ",
-    },
-    {
-        id: "booking3",
-        code: "COURT-12489",
-        status: "completed",
-        payment: "paid",
-        title: "Trung Tâm Cầu Lông Sunrise",
-        court: "Sân A1",
-        sport: "badminton",
-        address: "456 Nguyễn Hữu Thọ, Tân Hưng, Quận 7, TP. HCM",
-        date: "15/07/2026",
-        timeSlot: "08:00-09:00, 09:00-10:00",
-        note: "",
-        price: "180.000đ",
-    },
-    {
-        id: "booking4",
-        code: "COURT-99812",
-        status: "cancelled",
-        payment: "refunded",
-        title: "Sân Bóng Đá Mini Sport Land",
-        court: "Sân 5 Người B",
-        sport: "football",
-        address: "102 Phan Huy Ích, Phường 15, Tân Bình, TP. HCM",
-        date: "10/07/2026",
-        timeSlot: "16:00-17:30",
-        note: "Huỷ do trời mưa bão lớn.",
-        price: "250.000đ",
+// ----- Helpers -----
+const formatDateDisplay = (dateStr: string) => {
+    if (!dateStr) return "—";
+    const [year, month, day] = dateStr.split("-");
+    return `${day}/${month}/${year}`;
+};
+
+const formatPrice = (price: number) => {
+    if (!price && price !== 0) return "0đ";
+    return `${price.toLocaleString("vi-VN")}đ`;
+};
+
+const getStatusLabel = (status: string) => {
+    switch (status) {
+        case "PENDING": return "Chờ duyệt";
+        case "CONFIRMED": return "Đã xác nhận";
+        case "COMPLETED": return "Hoàn thành";
+        case "CANCELLED": return "Đã hủy";
+        default: return status;
     }
-];
+};
+
+const getPaymentLabel = (method: string) => {
+    switch (method) {
+        case "cash": return "Thanh toán khi đến sân";
+        case "payos": return "Đã thanh toán";
+        default: return "Chưa thanh toán";
+    }
+};
+
+const getPaymentClass = (method: string) => {
+    switch (method) {
+        case "cash": return "payment-cash";
+        case "payos": return "payment-paid";
+        default: return "payment-pending";
+    }
+};
+
+const getSportName = (booking: IBooking): string => {
+    const sport = booking.details[0]?.court_id?.sport_center_id?.sport_id?.name;
+    return sport ? sport.toLowerCase() : "";
+};
 
 export default function ProfilePage() {
+    const { user, updateUserData, logout } = useAuth();
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<"profile" | "password" | "bookings">("profile");
     const [bookingFilter, setBookingFilter] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [sportFilter, setSportFilter] = useState<string>("all");
 
+    // State cho form thông tin cá nhân
+    const [name, setName] = useState(user?.name || "");
+    const [phone, setPhone] = useState(user?.phone || "");
+    const [profileSaving, setProfileSaving] = useState(false);
+
+    // Đồng bộ form khi user được load từ AuthContext (bất đồng bộ)
+    useEffect(() => {
+        if (user) {
+            Promise.resolve().then(() => {
+                setName(user.name || "");
+                setPhone(user.phone || "");
+            });
+        }
+    }, [user]);
+
+    // State cho form đổi mật khẩu
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
+    const [passwordSaving, setPasswordSaving] = useState(false);
+
+    // State cho dữ liệu booking 
+    const [bookings, setBookings] = useState<IBooking[]>([]);
+    const [bookingLoading, setBookingLoading] = useState(false);
+    const [bookingError, setBookingError] = useState<string | null>(null);
+    const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null);
+
+    // Fetch lịch sử đặt sân từ API
+    useEffect(() => {
+        if (activeTab !== "bookings") return;
+
+        Promise.resolve()
+            .then(() => {
+                setBookings([]); // Reset dữ liệu khi chuyển tab
+                return authedFetch(`${API_BASE_URL}/bookings/history`);
+            })
+            .then(async (res) => {
+                if (!res.ok) {
+                    throw new Error("Lỗi khi tải lịch sử đặt sân.");
+                }
+                const data = await res.json();
+                if (data.success) {
+                    setBookings(data.data);
+                } else {
+                    throw new Error(data.message || "Có lỗi xảy ra.");
+                }
+            })
+            .catch((err: unknown) => {
+                console.error(err);
+                setBookingError(err instanceof Error ? err.message : "Có lỗi xảy ra.");
+            })
+            .finally(() => setBookingLoading(false));
+    }, [activeTab]);
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user?._id) {
+            alert("Vui lòng đăng nhập để cập nhật thông tin.");
+            return;
+        }
+        if (!name.trim()) {
+            alert("Vui lòng nhập họ và tên.");
+            return;
+        }
+
+        setProfileSaving(true);
+        try {
+            const res = await authedFetch(`${API_BASE_URL}/users/${user._id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, phone })
+            });
+
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || data.error || "Cập nhật thông tin thất bại.");
+            }
+
+            alert("Cập nhật thông tin thành công!");
+            // Cập nhật user trong context + localStorage
+            updateUserData({ name: data.user?.name || name, phone: data.user?.phone || phone });
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : "Có lỗi xảy ra.");
+        } finally {
+            setProfileSaving(false);
+        }
+    };
+
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user?._id) {
+            alert("Vui lòng đăng nhập để đổi mật khẩu.");
+            return;
+        }
+        if (!currentPassword) {
+            alert("Vui lòng nhập mật khẩu hiện tại.");
+            return;
+        }
+        if (!newPassword || newPassword.length < 6) {
+            alert("Mật khẩu mới phải có tối thiểu 6 ký tự.");
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+            return;
+        }
+
+        setPasswordSaving(true);
+        try {
+            const res = await authedFetch(`${API_BASE_URL}/users/${user._id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    current_password: currentPassword,
+                    password: newPassword
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || data.error || "Đổi mật khẩu thất bại.");
+            }
+
+            alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+            // Đăng xuất và chuyển về trang chủ sau khi đổi mật khẩu
+            logout();
+            router.push("/");
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : "Có lỗi xảy ra.");
+        } finally {
+            setPasswordSaving(false);
+        }
+    };
+
+    const handleCancelBooking = async (bookingId: string) => {
+        if (!window.confirm("Bạn có chắc chắn muốn hủy đơn đặt sân này?")) return;
+
+        try {
+            const res = await authedFetch(`${API_BASE_URL}/bookings/${bookingId}/status`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status: "CANCELLED" })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => null);
+                throw new Error(errData?.message || "Không thể hủy đơn đặt sân.");
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                alert("Hủy đặt sân thành công!");
+                // Cập nhật state cục bộ
+                setBookings(prev => prev.map(b => b._id === bookingId ? { ...b, status: "CANCELLED" } : b));
+            } else {
+                throw new Error(data.message || "Hủy đặt sân thất bại.");
+            }
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : "Có lỗi xảy ra.");
+        }
+    };
+
     // Filter logic
-    const filteredBookings = MOCK_BOOKINGS.filter((booking) => {
-        const matchesStatus = bookingFilter === "all" || booking.status === bookingFilter;
-        const matchesSport = sportFilter === "all" || booking.sport === sportFilter;
-        
+    const filteredBookings = bookings.filter((booking) => {
+        const statusKey = booking.status.toLowerCase();
+        const matchesStatus = bookingFilter === "all" || statusKey === bookingFilter;
+
+        const sportName = getSportName(booking);
+        const matchesSport = sportFilter === "all" || sportName === sportFilter;
+
         const searchLower = searchQuery.toLowerCase();
-        const matchesSearch = 
-            booking.code.toLowerCase().includes(searchLower) ||
-            booking.title.toLowerCase().includes(searchLower) ||
-            booking.court.toLowerCase().includes(searchLower) ||
-            booking.address.toLowerCase().includes(searchLower);
+        const code = booking._id ? booking._id.slice(-8).toUpperCase() : "";
+        const centerName = booking.details[0]?.court_id?.sport_center_id?.name || "";
+        const courtNames = booking.details.map(d => d.court_id?.court_name || "").join(", ");
+        const address = booking.details[0]?.court_id?.sport_center_id?.address || "";
+
+        const matchesSearch =
+            code.toLowerCase().includes(searchLower) ||
+            centerName.toLowerCase().includes(searchLower) ||
+            courtNames.toLowerCase().includes(searchLower) ||
+            address.toLowerCase().includes(searchLower);
 
         return matchesStatus && matchesSport && matchesSearch;
     });
@@ -91,10 +257,14 @@ export default function ProfilePage() {
                 <aside className="profile-sidebar">
                     <div className="profile-user-card">
                         <div className="profile-avatar-wrapper">
-                            <img alt="User Avatar" className="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop" />
+                            <img
+                                alt="User Avatar"
+                                className="profile-avatar"
+                                src={user?.avatar_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"}
+                            />
                         </div>
-                        <h3 className="profile-user-name">Nguyễn Văn A</h3>
-                        <p className="profile-user-email">nguyenvana@example.com</p>
+                        <h3 className="profile-user-name">{user?.name || "Khách hàng"}</h3>
+                        <p className="profile-user-email">{user?.email || ""}</p>
                     </div>
 
                     <nav className="profile-tabs">
@@ -134,13 +304,14 @@ export default function ProfilePage() {
                                 <p className="profile-card-subtitle">Quản lý và cập nhật thông tin họ tên, số điện thoại của bạn</p>
                             </div>
 
-                            <form id="profile-form" className="profile-form">
+                            <form id="profile-form" className="profile-form" onSubmit={handleUpdateProfile}>
                                 <div className="form-group">
                                     <label className="form-label">Họ và tên</label>
                                     <input
                                         type="text"
                                         id="profile-name"
-                                        defaultValue="Nguyễn Văn A"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
                                         required
                                         className="form-input"
                                         placeholder="Nhập họ và tên"
@@ -152,7 +323,7 @@ export default function ProfilePage() {
                                     <input
                                         type="email"
                                         id="profile-email"
-                                        defaultValue="nguyenvana@example.com"
+                                        value={user?.email || ""}
                                         disabled
                                         className="form-input disabled"
                                     />
@@ -163,7 +334,8 @@ export default function ProfilePage() {
                                     <input
                                         type="text"
                                         id="profile-phone"
-                                        defaultValue="0987654321"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
                                         required
                                         className="form-input"
                                         placeholder="Nhập số điện thoại"
@@ -171,8 +343,8 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div className="form-actions">
-                                    <button type="submit" id="save-profile-btn" className="btn btn-primary">
-                                        Cập nhật thông tin
+                                    <button type="submit" id="save-profile-btn" className="btn btn-primary" disabled={profileSaving}>
+                                        {profileSaving ? "Đang lưu..." : "Cập nhật thông tin"}
                                     </button>
                                 </div>
                             </form>
@@ -186,12 +358,14 @@ export default function ProfilePage() {
                                 <p className="profile-card-subtitle">Đảm bảo an toàn tài khoản bằng cách sử dụng mật khẩu mạnh</p>
                             </div>
 
-                            <form id="password-form" className="profile-form">
+                            <form id="password-form" className="profile-form" onSubmit={handleChangePassword}>
                                 <div className="form-group">
                                     <label className="form-label">Mật khẩu hiện tại</label>
                                     <input
                                         type="password"
                                         id="profile-current-password"
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
                                         placeholder="Nhập mật khẩu hiện tại"
                                         required
                                         className="form-input"
@@ -203,6 +377,8 @@ export default function ProfilePage() {
                                     <input
                                         type="password"
                                         id="profile-new-password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
                                         placeholder="Mật khẩu mới (tối thiểu 6 ký tự)"
                                         required
                                         className="form-input"
@@ -214,6 +390,8 @@ export default function ProfilePage() {
                                     <input
                                         type="password"
                                         id="profile-confirm-password"
+                                        value={confirmNewPassword}
+                                        onChange={(e) => setConfirmNewPassword(e.target.value)}
                                         placeholder="Xác nhận mật khẩu mới"
                                         required
                                         className="form-input"
@@ -221,8 +399,8 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div className="form-actions">
-                                    <button type="submit" id="save-password-btn" className="btn btn-primary">
-                                        Thay đổi mật khẩu
+                                    <button type="submit" id="save-password-btn" className="btn btn-primary" disabled={passwordSaving}>
+                                        {passwordSaving ? "Đang lưu..." : "Thay đổi mật khẩu"}
                                     </button>
                                 </div>
                             </form>
@@ -266,48 +444,90 @@ export default function ProfilePage() {
                         </div>
 
                         <div id="bookings-list-container" className="bookings-list">
-                            {filteredBookings.length > 0 ? (
-                                filteredBookings.map((booking) => (
-                                    <div key={booking.id} className="booking-card" data-status={booking.status}>
-                                        <div className="booking-card-body">
-                                            <div className="booking-header">
-                                                <div className="booking-meta">
-                                                    <span className="booking-code">{booking.code}</span>
-                                                    <span className={`booking-badge status-${booking.status}`}>
-                                                        {booking.status === "confirmed" && "Đã xác nhận"}
-                                                        {booking.status === "pending" && "Chờ duyệt"}
-                                                        {booking.status === "completed" && "Hoàn thành"}
-                                                        {booking.status === "cancelled" && "Đã hủy"}
-                                                    </span>
-                                                    <span className={`booking-badge payment-${booking.payment}`}>
-                                                        {booking.payment === "paid" && "Đã thanh toán"}
-                                                        {booking.payment === "unpaid" && "Chưa thanh toán"}
-                                                        {booking.payment === "refunded" && "Đã hoàn tiền"}
-                                                    </span>
+                            {bookingLoading ? (
+                                <div className="no-bookings-placeholder">
+                                    <span className="material-symbols-outlined placeholder-icon">hourglass_top</span>
+                                    <p>Đang tải lịch sử đặt sân...</p>
+                                </div>
+                            ) : bookingError ? (
+                                <div className="no-bookings-placeholder">
+                                    <span className="material-symbols-outlined placeholder-icon">error</span>
+                                    <p>{bookingError}</p>
+                                </div>
+                            ) : filteredBookings.length > 0 ? (
+                                filteredBookings.map((booking) => {
+                                    const statusKey = booking.status.toLowerCase();
+                                    const code = booking._id ? booking._id.slice(-8).toUpperCase() : "";
+                                    const centerName = booking.details[0]?.court_id?.sport_center_id?.name || "Cụm sân";
+                                    const courtNames = booking.details.map((d, i) =>
+                                        i === 0 ? d.court_id?.court_name || "Sân" : d.court_id?.court_name || "Sân"
+                                    ).join(", ");
+                                    const address = booking.details[0]?.court_id?.sport_center_id?.address || "";
+                                    const timeSlots = booking.details.map(d =>
+                                        `${d.time_slot_id?.start_time || "--"}-${d.time_slot_id?.end_time || "--"}`
+                                    ).join(", ");
+                                    const paymentMethod = booking.payment_method;
+
+                                    return (
+                                        <div key={booking._id} className="booking-card" data-status={statusKey}>
+                                            <div className="booking-card-body">
+                                                <div className="booking-header">
+                                                    <div className="booking-meta" >
+                                                        <span className="booking-code">{code}</span>
+                                                        <span className={`booking-badge status-${statusKey}`} style={{ backgroundColor: "#ffffff" }}>
+                                                            {getStatusLabel(booking.status)}
+                                                        </span>
+                                                        <span className={`booking-badge ${getPaymentClass(paymentMethod)}`} style={{ backgroundColor: "#ffffff" }}>
+                                                            {getPaymentLabel(paymentMethod)}
+                                                        </span>
+                                                    </div>
                                                 </div>
+                                                <h4 className="booking-title">{centerName} - <span className="court-name">{courtNames}</span></h4>
+                                                {address && (
+                                                    <p className="booking-info address">
+                                                        <span className="material-symbols-outlined">location_on</span> {address}
+                                                    </p>
+                                                )}
+                                                <p className="booking-info datetime">
+                                                    <span className="material-symbols-outlined">calendar_month</span> Ngày: <strong>{formatDateDisplay(booking.booking_for_date)}</strong> | Khung giờ: <strong>{timeSlots}</strong>
+                                                </p>
+                                                {booking.note && (
+                                                    <p className="booking-note">Ghi chú: {booking.note}</p>
+                                                )}
+                                                {paymentMethod === 'payos' && booking.status === 'CANCELLED' && (
+                                                    <p className="booking-note" style={{ color: '#92400e' }}>
+                                                        Đơn đã hủy. Nếu bạn đã thanh toán, tiền sẽ được hoàn lại, vui lòng liên hệ với quản trị viên.
+                                                    </p>
+                                                )}
+                                                {booking.services && booking.services.length > 0 && (
+                                                    <p className="booking-info">
+                                                        <span className="material-symbols-outlined">support</span> Dịch vụ: {booking.services.map(s => `${s.service_id?.service_name || "Dịch vụ"} x${s.quantity}`).join(", ")}
+                                                    </p>
+                                                )}
                                             </div>
-                                            <h4 className="booking-title">{booking.title} - <span className="court-name">{booking.court}</span></h4>
-                                            <p className="booking-info address">
-                                                <span className="material-symbols-outlined">location_on</span> {booking.address}
-                                            </p>
-                                            <p className="booking-info datetime">
-                                                <span className="material-symbols-outlined">calendar_month</span> Ngày: <strong>{booking.date}</strong> | Khung giờ: <strong>{booking.timeSlot}</strong>
-                                            </p>
-                                            {booking.note && (
-                                                <p className="booking-note">Ghi chú: {booking.note}</p>
-                                            )}
-                                        </div>
-                                        <div className="booking-card-actions">
-                                            <div className="booking-price-wrapper">
-                                                <span className="price-label">Tổng cộng</span>
-                                                <div className="booking-price">{booking.price}</div>
+                                            <div className="booking-card-actions">
+                                                <div className="booking-price-wrapper">
+                                                    <span className="price-label">Tổng cộng</span>
+                                                    <div className="booking-price">{formatPrice(booking.total_price)}</div>
+                                                </div>
+                                                <button
+                                                    className="view-detail-btn"
+                                                    onClick={() => setSelectedBooking(booking)}
+                                                >
+                                                    Xem chi tiết
+                                                </button>
+                                                {(booking.status === "PENDING" || booking.status === "CONFIRMED") && (
+                                                    <button
+                                                        className="cancel-booking-btn"
+                                                        onClick={() => handleCancelBooking(booking._id)}
+                                                    >
+                                                        Hủy đặt sân
+                                                    </button>
+                                                )}
                                             </div>
-                                            {booking.status === "confirmed" && (
-                                                <button className="cancel-booking-btn">Hủy đặt sân</button>
-                                            )}
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div id="no-bookings-message" className="no-bookings-placeholder">
                                     <span className="material-symbols-outlined placeholder-icon">event_busy</span>
@@ -319,6 +539,167 @@ export default function ProfilePage() {
 
                 </main>
             </div>
-        </div>
+
+            {/* --- Modal Xem Chi Tiết Đặt Sân --- */}
+            {
+                selectedBooking && (
+                    <div className="booking-modal-overlay" onClick={() => setSelectedBooking(null)}>
+                        <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="booking-modal-header">
+                                <h3 className="booking-modal-title">Chi Tiết Đặt Sân</h3>
+                                <button className="booking-modal-close" onClick={() => setSelectedBooking(null)}>
+                                    <span className="material-symbols-outlined">close</span>
+                                </button>
+                            </div>
+
+                            <div className="booking-modal-body">
+                                {(() => {
+                                    const b = selectedBooking;
+                                    const statusKey = b.status.toLowerCase();
+                                    const code = b._id ? b._id.slice(-8).toUpperCase() : "";
+                                    const centerName = b.details[0]?.court_id?.sport_center_id?.name || "Cụm sân";
+                                    const address = b.details[0]?.court_id?.sport_center_id?.address || "";
+                                    const sportName = b.details[0]?.court_id?.sport_center_id?.sport_id?.name || "";
+                                    const paymentLabel = getPaymentLabel(b.payment_method);
+
+                                    return (
+                                        <>
+                                            {/* Mã & Trạng thái */}
+                                            <div className="booking-modal-status-row">
+                                                <div>
+                                                    <span className="booking-modal-label">Mã đặt sân</span>
+                                                    <div className="booking-modal-code">{code}</div>
+                                                </div>
+                                                <div className="booking-modal-badges">
+                                                    <span className={`booking-badge status-${statusKey}`}>
+                                                        {getStatusLabel(b.status)}
+                                                    </span>
+                                                    <span className={`booking-badge ${getPaymentClass(b.payment_method)}`}>
+                                                        {paymentLabel}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Cụm sân */}
+                                            <div className="booking-modal-section">
+                                                <h4 className="booking-modal-section-title">
+                                                    <span className="material-symbols-outlined">stadium</span>
+                                                    Thông tin sân
+                                                </h4>
+                                                <div className="booking-modal-info-grid">
+                                                    <div className="booking-modal-info-item">
+                                                        <span className="booking-modal-info-label">Cụm sân</span>
+                                                        <span className="booking-modal-info-value">{centerName}</span>
+                                                    </div>
+                                                    {sportName && (
+                                                        <div className="booking-modal-info-item">
+                                                            <span className="booking-modal-info-label">Môn thể thao</span>
+                                                            <span className="booking-modal-info-value">{sportName}</span>
+                                                        </div>
+                                                    )}
+                                                    {address && (
+                                                        <div className="booking-modal-info-item full">
+                                                            <span className="booking-modal-info-label">Địa chỉ</span>
+                                                            <span className="booking-modal-info-value">{address}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Chi tiết sân & giờ */}
+                                            <div className="booking-modal-section">
+                                                <h4 className="booking-modal-section-title">
+                                                    <span className="material-symbols-outlined">event_available</span>
+                                                    Chi tiết đặt sân
+                                                </h4>
+                                                <div className="booking-modal-date-info">
+                                                    <span className="material-symbols-outlined">calendar_month</span>
+                                                    <strong>Ngày chơi:</strong> {formatDateDisplay(b.booking_for_date)}
+                                                </div>
+                                                <div className="booking-modal-table">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Sân</th>
+                                                                <th>Khung giờ</th>
+                                                                <th>Giá</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {b.details.map((d, idx) => (
+                                                                <tr key={idx}>
+                                                                    <td>{d.court_id?.court_name || "—"}</td>
+                                                                    <td>
+                                                                        {d.time_slot_id?.start_time || "--"} - {d.time_slot_id?.end_time || "--"}
+                                                                    </td>
+                                                                    <td>{formatPrice(d.price_at_booking)}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            {/* Dịch vụ */}
+                                            {b.services && b.services.length > 0 && (
+                                                <div className="booking-modal-section">
+                                                    <h4 className="booking-modal-section-title">
+                                                        <span className="material-symbols-outlined">support</span>
+                                                        Dịch vụ đi kèm
+                                                    </h4>
+                                                    <div className="booking-modal-table">
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Dịch vụ</th>
+                                                                    <th>Số lượng</th>
+                                                                    <th>Giá</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {b.services.map((s, idx) => (
+                                                                    <tr key={idx}>
+                                                                        <td>{s.service_id?.service_name || "Dịch vụ"}</td>
+                                                                        <td>x{s.quantity}</td>
+                                                                        <td>{formatPrice(s.price_at_booking)}</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Ghi chú */}
+                                            {b.note && (
+                                                <div className="booking-modal-section">
+                                                    <h4 className="booking-modal-section-title">
+                                                        <span className="material-symbols-outlined">notes</span>
+                                                        Ghi chú
+                                                    </h4>
+                                                    <p className="booking-modal-note">{b.note}</p>
+                                                </div>
+                                            )}
+
+                                            {/* Tổng tiền */}
+                                            <div className="booking-modal-total">
+                                                <div className="booking-modal-total-row">
+                                                    <span>Tạm tính</span>
+                                                    <span>{formatPrice(b.subtotal || b.total_price)}</span>
+                                                </div>
+                                                <div className="booking-modal-total-row final">
+                                                    <span>Tổng cộng</span>
+                                                    <span className="booking-modal-total-price">{formatPrice(b.total_price)}</span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 }

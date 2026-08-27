@@ -65,48 +65,22 @@
     gap: 40px;
 }
 
-/* Bento Gallery */
+/* Bento Gallery - hiển thị 1 ảnh chính toàn chiều rộng */
 .bento-gallery {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    gap: 16px;
-    height: 480px;
-}
-
-@media (max-width: 768px) {
-    .bento-gallery {
-        grid-template-columns: 1fr;
-        height: auto;
-    }
-
-    .gallery-side {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        height: 160px !important;
-    }
+    display: block;
 }
 
 .gallery-main {
     position: relative;
     border-radius: 16px;
     overflow: hidden;
-    height: 100%;
+    height: 480px;
 }
 
-.gallery-side {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    height: 100%;
-}
-
-.gallery-thumb {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    flex: 1;
-    cursor: pointer;
+@media (max-width: 768px) {
+    .gallery-main {
+        height: auto;
+    }
 }
 
 .gallery-img {
@@ -116,37 +90,46 @@
     transition: transform 0.5s ease;
 }
 
-.gallery-main:hover .gallery-img,
-.gallery-thumb:hover .gallery-img {
+.gallery-main:hover .gallery-img {
     transform: scale(1.04);
 }
 
-.show-more {
-    position: relative;
+/* Court Thumbnail Strip - danh sách ảnh các SÂN trong cụm, xếp hàng ngang */
+.court-thumb-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
 }
 
-.gallery-overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    gap: 8px;
-    font-family: var(--font-family-title);
-    font-weight: 600;
-    font-size: 14px;
+.court-thumb-item {
+    position: relative;
+    width: 88px;
+    height: 64px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    background: none;
     transition: var(--transition);
 }
 
-.gallery-overlay span:first-child {
-    font-size: 28px;
+.court-thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.gallery-overlay:hover {
-    background-color: rgba(0, 0, 0, 0.6);
+.court-thumb-item:hover {
+    border-color: var(--outline);
+    transform: translateY(-2px);
+}
+
+.court-thumb-item.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--surface-container-high);
 }
 
 /* Title & Header Info */
