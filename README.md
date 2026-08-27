@@ -24,7 +24,7 @@ Courtify là nền tảng giúp người dùng đặt sân thể thao (Tennis, C
 
    - **`NEXT_PUBLIC_API_BASE_URL`** — URL gốc của Backend API (bắt buộc kèm `/api`).
      - Dev: `http://localhost:8000/api`
-     - Production: `https://courtify-backend-fwe5.onrender.com/api`
+     - Production: `<URL backend khi deploy>`
    - ⚠️ Thiếu biến này ở production → **build lỗi ngay** (cố ý để tránh deploy sai).
 
 4. **Chạy thử**
