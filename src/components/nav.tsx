@@ -55,8 +55,6 @@ export default function Nav() {
         <nav className="nav-menu">
           <Link href="/" className={`nav-item ${isActive("/") ? "active" : ""}`}>Trang chủ</Link>
           <Link href="/courts" className={`nav-item ${isActive("/courts") ? "active" : ""}`}>Tìm sân</Link>
-          <Link href="/news" className={`nav-item ${isActive("/news") ? "active" : ""}`}>Tin tức</Link>
-          <Link href="/contact" className={`nav-item ${isActive("/contact") ? "active" : ""}`}>Liên hệ</Link>
           <Link href="/about" className={`nav-item ${isActive("/about") ? "active" : ""}`}>Giới thiệu</Link>
         </nav>
         <div className="header-actions">
