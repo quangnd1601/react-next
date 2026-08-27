@@ -33,12 +33,6 @@ Courtify là nền tảng giúp người dùng đặt sân thể thao (Tennis, C
    ```
    Mở http://localhost:3000
 
-## 🌐 Deploy lên Vercel
-1. Import repository lên Vercel (tự nhận diện Next.js).
-2. Set environment variable `NEXT_PUBLIC_API_BASE_URL` = URL backend production.
-3. Sau khi đổi env → **Redeploy** (bỏ tick "Use existing Build Cache") mới có hiệu lực.
-4. Link production: https://courtify-booking.vercel.app
-
 ## 🔒 Bảo mật
 - Không bao giờ commit file `.env` lên repository.
 - Biến `NEXT_PUBLIC_*` là **giá trị công khai** — tuyệt đối không đặt secret (JWT, MONGODB_URI, API key...) vào biến này.
