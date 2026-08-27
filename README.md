@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Courtify - Nền tảng đặt sân thể thao
 
-## Getting Started
+Courtify là nền tảng giúp người dùng đặt sân thể thao (Tennis, Cầu lông, Pickleball) trực tuyến nhanh chóng. Frontend được xây dựng theo kiến trúc Next.js App Router + TypeScript, giao tiếp với Backend qua RESTful API.
 
-First, run the development server:
+## 🚀 Tính năng nổi bật
+- **Tìm & đặt sân:** Tìm cụm sân theo môn thể thao, xem khung giờ trống, đặt lịch trong vài giây.
+- **Thanh toán trực tuyến:** Tích hợp cổng thanh toán PayOS.
+- **Xác thực bảo mật:** Đăng ký/đăng nhập bằng JWT, tự động refresh token.
+- **Quản trị toàn diện:** Dashboard thống kê, quản lý cụm sân, sân, booking, voucher, người dùng.
+- **Voucher khuyến mãi**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Hướng dẫn cài đặt
+1. **Yêu cầu môi trường**
+   - Node.js >= 20
+   - npm (đi kèm Node.js)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Cài đặt các thư viện**
+   ```
+   npm install
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Cấu hình môi trường (QUAN TRỌNG)**
+   Tạo file `.env` tại thư mục gốc và điền biến sau:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   - **`NEXT_PUBLIC_API_BASE_URL`** — URL gốc của Backend API (bắt buộc kèm `/api`).
+     - Dev: `http://localhost:8000/api`
+     - Production: `https://courtify-backend-fwe5.onrender.com/api`
+   - ⚠️ Thiếu biến này ở production → **build lỗi ngay** (cố ý để tránh deploy sai).
 
-## Learn More
+4. **Chạy thử**
+   ```
+   npm run dev
+   ```
+   Mở http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+## 🌐 Deploy lên Vercel
+1. Import repository lên Vercel (tự nhận diện Next.js).
+2. Set environment variable `NEXT_PUBLIC_API_BASE_URL` = URL backend production.
+3. Sau khi đổi env → **Redeploy** (bỏ tick "Use existing Build Cache") mới có hiệu lực.
+4. Link production: https://courtify-booking.vercel.app
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔒 Bảo mật
+- Không bao giờ commit file `.env` lên repository.
+- Biến `NEXT_PUBLIC_*` là **giá trị công khai** — tuyệt đối không đặt secret (JWT, MONGODB_URI, API key...) vào biến này.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
