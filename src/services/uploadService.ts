@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/config/env";
+import { authedFetch } from "@/services/client/session";
 
 export interface UploadSingleResponse {
   success: boolean;
@@ -21,7 +22,7 @@ export const uploadSingleImage = async (
   formData.append('image', file);
   formData.append('folder', folder);
 
-  const response = await fetch(`${API_BASE_URL}/upload/single`, {
+  const response = await authedFetch(`${API_BASE_URL}/upload/single`, {
     method: 'POST',
     body: formData,
   });
@@ -44,7 +45,7 @@ export const uploadMultipleImages = async (
   });
   formData.append('folder', folder);
 
-  const response = await fetch(`${API_BASE_URL}/upload/multiple`, {
+  const response = await authedFetch(`${API_BASE_URL}/upload/multiple`, {
     method: 'POST',
     body: formData,
   });

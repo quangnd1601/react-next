@@ -1,5 +1,6 @@
 import { ISportCenter, ISport } from "@/interface/sportCenter";
 import { API_BASE_URL } from "@/config/env";
+import { authedFetch } from "@/services/client/session";
 
 export const adminCenterService = {
   // 1. Lấy danh sách cụm sân (cho Admin có tìm kiếm/lọc)
@@ -23,7 +24,7 @@ export const adminCenterService = {
 
   // 3. Thêm mới cụm sân
   async create(payload: Partial<ISportCenter>): Promise<{ success: boolean; data?: ISportCenter; message?: string }> {
-    const res = await fetch(`${API_BASE_URL}/sport-centers`, {
+    const res = await authedFetch(`${API_BASE_URL}/sport-centers`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -34,7 +35,7 @@ export const adminCenterService = {
 
   // 4. Cập nhật cụm sân
   async update(id: string, payload: Partial<ISportCenter>): Promise<{ success: boolean; data?: ISportCenter; message?: string }> {
-    const res = await fetch(`${API_BASE_URL}/sport-centers/${id}`, {
+    const res = await authedFetch(`${API_BASE_URL}/sport-centers/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -45,7 +46,7 @@ export const adminCenterService = {
 
   // 5. Xóa cụm sân
   async delete(id: string): Promise<{ success: boolean; message?: string }> {
-    const res = await fetch(`${API_BASE_URL}/sport-centers/${id}`, {
+    const res = await authedFetch(`${API_BASE_URL}/sport-centers/${id}`, {
       method: "DELETE",
     });
     const data = await res.json();

@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/config/env";
+import { authedFetch } from "@/services/client/session";
 
 export interface IVoucher {
     _id: string;
@@ -27,7 +28,7 @@ export const adminVoucherService = {
         return data.success ? data.data : null;
     },
     async create(payload: Partial<IVoucher>): Promise<{ success: boolean; data?: IVoucher; message?: string }> {
-        const res = await fetch(`${API_BASE_URL}/vouchers`, {
+        const res = await authedFetch(`${API_BASE_URL}/vouchers`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -35,7 +36,7 @@ export const adminVoucherService = {
         return res.json();
     },
     async update(id: string, payload: Partial<IVoucher>): Promise<{ success: boolean; data?: IVoucher; message?: string }> {
-        const res = await fetch(`${API_BASE_URL}/vouchers/${id}`, {
+        const res = await authedFetch(`${API_BASE_URL}/vouchers/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -43,7 +44,7 @@ export const adminVoucherService = {
         return res.json();
     },
     async delete(id: string): Promise<{ success: boolean; message?: string }> {
-        const res = await fetch(`${API_BASE_URL}/vouchers/${id}`, {
+        const res = await authedFetch(`${API_BASE_URL}/vouchers/${id}`, {
             method: "DELETE",
         });
         return res.json();

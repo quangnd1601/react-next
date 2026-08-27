@@ -1,5 +1,6 @@
 
 import { API_BASE_URL } from "@/config/env";
+import { authedFetch } from "@/services/client/session";
 
 export interface ICourtAdmin {
     _id: string;
@@ -46,7 +47,7 @@ export const adminCourtService = {
 
     // 4. Tạo sân mới
     async create(payload: Partial<ICourtAdmin>): Promise<{ success: boolean; data?: ICourtAdmin; message?: string }> {
-        const res = await fetch(`${API_BASE_URL}/courts`, {
+        const res = await authedFetch(`${API_BASE_URL}/courts`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -57,7 +58,7 @@ export const adminCourtService = {
 
     // 5. Cập nhật sân
     async update(id: string, payload: Partial<ICourtAdmin>): Promise<{ success: boolean; data?: ICourtAdmin; message?: string }> {
-        const res = await fetch(`${API_BASE_URL}/courts/${id}`, {
+        const res = await authedFetch(`${API_BASE_URL}/courts/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -68,7 +69,7 @@ export const adminCourtService = {
 
     // 6. Xóa sân
     async delete(id: string): Promise<{ success: boolean; message?: string }> {
-        const res = await fetch(`${API_BASE_URL}/courts/${id}`, {
+        const res = await authedFetch(`${API_BASE_URL}/courts/${id}`, {
             method: "DELETE",
         });
         const data = await res.json();
