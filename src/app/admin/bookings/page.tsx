@@ -82,22 +82,6 @@ const formatPrice = (price: number) => {
     return `${price.toLocaleString("vi-VN")}đ`;
 };
 
-const getPaymentLabel = (method: string) => {
-    switch (method) {
-        case "cash": return "Thanh toán khi đến sân";
-        case "payos": return "Đã thanh toán";
-        default: return "Chưa thanh toán";
-    }
-};
-
-const getPaymentClass = (method: string) => {
-    switch (method) {
-        case "cash": return "payment-cash";
-        case "payos": return "payment-paid";
-        default: return "payment-pending";
-    }
-};
-
 const getPaymentStatusLabel = (status: string) => {
     switch (status) {
         case "PENDING": return "Chờ thanh toán";
@@ -579,7 +563,7 @@ export default function BookingsPage() {
                                             </div>
                                             <div className="booking-modal-badges">
                                                 <span className={`booking-badge status-${statusInfo.className}`}>{statusInfo.label}</span>
-                                                <span className={`booking-badge ${getPaymentClass(b.payment_method)}`}>{getPaymentLabel(b.payment_method)}</span>
+                                                <span className={`booking-badge pay-${getPaymentBadge(b).className}`}>{getPaymentBadge(b).label}</span>
                                             </div>
                                         </div>
 
