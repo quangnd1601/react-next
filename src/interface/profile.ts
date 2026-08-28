@@ -39,6 +39,15 @@ export interface IBookingService {
     price_at_booking: number;
 }
 
+export interface IPaymentInfo {
+    order_code?: number;
+    payment_provider?: string;
+    payment_status?: string;
+    paid_amount?: number;
+    paid_at?: string;
+    refund_note?: string;
+}
+
 export interface IBooking {
     _id: string;
     booking_for_date: string; // 'YYYY-MM-DD'
@@ -49,5 +58,6 @@ export interface IBooking {
     note?: string;
     details: IBookingDetail[];
     services?: IBookingService[];
+    payment?: IPaymentInfo | null;
     created_at: string;
 }

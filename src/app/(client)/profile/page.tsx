@@ -30,19 +30,15 @@ const getStatusLabel = (status: string) => {
     }
 };
 
-const getPaymentLabel = (method: string) => {
-    switch (method) {
-        case "cash": return "Thanh toán khi đến sân";
-        case "payos": return "Đã thanh toán";
-        default: return "Chưa thanh toán";
-    }
-};
-
-const getPaymentClass = (method: string) => {
-    switch (method) {
-        case "cash": return "payment-cash";
-        case "payos": return "payment-paid";
-        default: return "payment-pending";
+const getPaymentBadge = (b: IBooking) => {
+    if (b.payment_method === "cash") return { label: "Tiền mặt", className: "payment-cash" };
+    const key = b.payment?.payment_status ?? "NONE";
+    switch (key) {
+        case "SUCCESS": return { label: "Đã thanh toán", className: "payment-paid" };
+        case "REFUND_PENDING": return { label: "Chờ hoàn tiền", className: "payment-pending" };
+        case "REFUNDED": return { label: "Đã hoàn tiền", className: "payment-pending" };
+        case "FAILED": return { label: "Đã hủy", className: "payment-pending" };
+        default: return { label: "Chưa thanh toán", className: "payment-pending" };
     }
 };
 
@@ -477,8 +473,8 @@ export default function ProfilePage() {
                                                         <span className={`booking-badge status-${statusKey}`} style={{ backgroundColor: "#ffffff" }}>
                                                             {getStatusLabel(booking.status)}
                                                         </span>
-                                                        <span className={`booking-badge ${getPaymentClass(paymentMethod)}`} style={{ backgroundColor: "#ffffff" }}>
-                                                            {getPaymentLabel(paymentMethod)}
+                                                        <span className={`booking-badge ${getPaymentBadge(booking).className}`} style={{ backgroundColor: "#ffffff" }}>
+                                                            {getPaymentBadge(booking).label}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -560,7 +556,6 @@ export default function ProfilePage() {
                                     const centerName = b.details[0]?.court_id?.sport_center_id?.name || "Cụm sân";
                                     const address = b.details[0]?.court_id?.sport_center_id?.address || "";
                                     const sportName = b.details[0]?.court_id?.sport_center_id?.sport_id?.name || "";
-                                    const paymentLabel = getPaymentLabel(b.payment_method);
 
                                     return (
                                         <>
@@ -574,8 +569,8 @@ export default function ProfilePage() {
                                                     <span className={`booking-badge status-${statusKey}`}>
                                                         {getStatusLabel(b.status)}
                                                     </span>
-                                                    <span className={`booking-badge ${getPaymentClass(b.payment_method)}`}>
-                                                        {paymentLabel}
+                                                    <span className={`booking-badge ${getPaymentBadge(b).className}`}>
+                                                        {getPaymentBadge(b).label}
                                                     </span>
                                                 </div>
                                             </div>
