@@ -86,7 +86,7 @@ const getPaymentStatusLabel = (status: string) => {
     switch (status) {
         case "PENDING": return "Chờ thanh toán";
         case "SUCCESS": return "Đã thanh toán";
-        case "FAILED": return "Thất bại / Đã hủy";
+        case "FAILED": return "Chưa thanh toán";
         case "REFUND_PENDING": return "Đã hủy — chờ hoàn tiền";
         case "REFUNDED": return "Đã hoàn tiền";
         default: return status || "—";
@@ -100,7 +100,7 @@ const getPaymentBadge = (b: IBooking) => {
         case "SUCCESS": return { label: "Đã thanh toán", className: "success" };
         case "REFUND_PENDING": return { label: "Chờ hoàn tiền", className: "refund-pending" };
         case "REFUNDED": return { label: "Đã hoàn tiền", className: "refunded" };
-        case "FAILED": return { label: "Đã hủy", className: "failed" };
+        case "FAILED": return { label: "Chưa thanh toán", className: "pending" };
         default: return { label: "Chưa thanh toán", className: "pending" };
     }
 };

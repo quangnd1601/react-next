@@ -37,7 +37,7 @@ const getPaymentBadge = (b: IBooking) => {
         case "SUCCESS": return { label: "Đã thanh toán", className: "payment-paid" };
         case "REFUND_PENDING": return { label: "Chờ hoàn tiền", className: "payment-pending" };
         case "REFUNDED": return { label: "Đã hoàn tiền", className: "payment-pending" };
-        case "FAILED": return { label: "Đã hủy", className: "payment-pending" };
+        case "FAILED": return { label: "Chưa thanh toán", className: "payment-pending" };
         default: return { label: "Chưa thanh toán", className: "payment-pending" };
     }
 };
